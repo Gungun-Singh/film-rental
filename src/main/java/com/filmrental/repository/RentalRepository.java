@@ -3,6 +3,7 @@ package com.filmrental.repository;
 import com.filmrental.entity.Rental;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,6 +12,16 @@ import java.util.List;
 public interface RentalRepository extends JpaRepository<Rental, Integer> {
 
     List<Rental> findByCustomer_CustomerId(Integer customerId);
+
+    @Query("""
+            SELECT DISTINCT r FROM Rental r
+            JOIN FETCH r.customer
+            JOIN FETCH r.inventory i
+            JOIN FETCH i.film
+            JOIN FETCH r.staff
+            WHERE r.customer.customerId = :customerId
+            """)
+    List<Rental> findByCustomerIdWithDetails(@Param("customerId") Integer customerId);
 
     // All open rentals (not yet returned)
     @Query("SELECT r FROM Rental r WHERE r.returnDate IS NULL")
