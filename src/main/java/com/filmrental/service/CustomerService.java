@@ -1,7 +1,7 @@
 package com.filmrental.service;
 
-import com.filmrental.entity.Customer;
+import com.filmrental.dto.response.CustomerResponse;
 
 public interface CustomerService {
-    Customer getCustomerById(Integer id);
+    CustomerResponse getCustomerById(Integer id);
 }
