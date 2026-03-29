@@ -9,14 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
-
-    List<Inventory> findByFilm_FilmId(Integer filmId);
-
-    // Returns inventory items for a film that have no open rental (return_date IS NULL)
-    @Query("SELECT i FROM Inventory i WHERE i.film.filmId = :filmId " +
-            "AND i.inventoryId NOT IN (" +
-            "  SELECT r.inventory.inventoryId FROM Rental r WHERE r.returnDate IS NULL" +
-            ")")
-    List<Inventory> findAvailableInventoryByFilmId(@Param("filmId") Integer filmId);
+public interface InventoryRepository extends JpaRepository<com.filmrental.entity.Inventory, Integer> {
+    List<com.filmrental.entity.Inventory> findByFilm_FilmId(Integer filmId);
+    List<Inventory> findByStore_StoreId(Integer storeId);
 }
