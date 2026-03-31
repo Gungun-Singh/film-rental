@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-@RestController @RequestMapping("/api/films") @RequiredArgsConstructor
+@RestController @RequestMapping("/api/v1/films") @RequiredArgsConstructor
 public class FilmController {
     private final FilmService filmService;
 
@@ -18,5 +18,11 @@ public class FilmController {
     @GetMapping("/{filmId}")
     public ResponseEntity<FilmResponse> getFilmById(@PathVariable Integer filmId) {
         return ResponseEntity.ok(filmService.getFilmById(filmId));
+    }
+
+    // GET /films/category/{category_id}
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<FilmResponse>> getFilmsByCategory(@PathVariable Integer categoryId) {
+        return ResponseEntity.ok(filmService.getFilmsByCategoryId(categoryId));
     }
 }
