@@ -37,8 +37,10 @@ public class Customer {
     @Column(name = "address_id", nullable = false)
     private Integer addressId;
 
+
     @Column(name = "active")
     private Integer active;
+
 
     @CreationTimestamp
     @Column(name = "create_date")
