@@ -5,4 +5,5 @@ import java.util.List;
 public interface FilmService {
     FilmResponse getFilmById(Integer id);
     List<FilmResponse> getFilmsByCategoryId(Integer categoryId);
+    List<FilmResponse> getFilmsByActorId(Integer actorId);
 }
