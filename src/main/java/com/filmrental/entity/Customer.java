@@ -1,7 +1,7 @@
 package com.filmrental.entity;
 
 import jakarta.persistence.*;
-        import lombok.AllArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -38,7 +38,7 @@ public class Customer {
     private Integer addressId;
 
     @Column(name = "active")
-    private Boolean active;
+    private Integer active;
 
     @CreationTimestamp
     @Column(name = "create_date")
