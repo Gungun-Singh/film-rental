@@ -42,5 +42,10 @@ public class FilmServiceImpl implements FilmService {
         return films.stream().map(filmMapper::toResponse).collect(Collectors.toList());
     }
 
+    @Override @Transactional(readOnly=true)
+    public List<FilmResponse> getTopRentedFilms() {
+        return filmRepository.findTopRented().stream().map(filmMapper::toResponse).collect(Collectors.toList());
+    }
+
 
 }
