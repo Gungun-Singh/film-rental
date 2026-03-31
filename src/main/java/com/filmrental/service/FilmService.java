@@ -4,4 +4,5 @@ import com.filmrental.dto.response.FilmResponse;
 import java.util.List;
 public interface FilmService {
     FilmResponse getFilmById(Integer id);
+    List<FilmResponse> getFilmsByCategoryId(Integer categoryId);
 }
