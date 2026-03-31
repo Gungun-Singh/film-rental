@@ -35,5 +35,12 @@ public class FilmServiceImpl implements FilmService {
         return films.stream().map(filmMapper::toResponse).collect(Collectors.toList());
     }
 
+    @Override @Transactional(readOnly=true)
+    public List<FilmResponse> getFilmsByActorId(Integer actorId) {
+        List<Film> films = filmRepository.findByActors_ActorId(actorId);
+        if (films.isEmpty()) throw new ResourceNotFoundException("No films found for actor id: " + actorId);
+        return films.stream().map(filmMapper::toResponse).collect(Collectors.toList());
+    }
+
 
 }
