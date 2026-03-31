@@ -7,7 +7,9 @@ import lombok.Data;
 @Builder
 public class StoreResponse {
     private Integer storeId;
-    private Integer addressId;
+    private String address;
+    private String city;
+    private String country;
     private String managerFirstName;
     private String managerLastName;
 }

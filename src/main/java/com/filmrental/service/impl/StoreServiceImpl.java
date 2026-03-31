@@ -1,5 +1,6 @@
 package com.filmrental.service.impl;
 
+import com.filmrental.entity.Address;
 import com.filmrental.entity.Store;
 import com.filmrental.dto.response.StoreResponse;
 import com.filmrental.exception.ResourceNotFoundException;
@@ -8,15 +9,31 @@ import com.filmrental.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.filmrental.entity.Staff;
-import com.filmrental.repository.StaffRepository;
 
 @Service
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService {
 
     private final StoreRepository storeRepository;
-    private final StaffRepository staffRepository;
+
+    private StoreResponse buildResponse(Store store) {
+        Address addr = store.getAddress();
+
+        return StoreResponse.builder()
+                .storeId(store.getStoreId())
+                .address(addr != null
+                        ? addr.getAddress() : null)
+                .city(addr != null && addr.getCity() != null
+                        ? addr.getCity().getCity() : null)
+                .country(addr != null && addr.getCity() != null
+                        && addr.getCity().getCountry() != null
+                        ? addr.getCity().getCountry().getCountry() : null)
+                .managerFirstName(store.getManagerStaff() != null
+                        ? store.getManagerStaff().getFirstName() : null)
+                .managerLastName(store.getManagerStaff() != null
+                        ? store.getManagerStaff().getLastName() : null)
+                .build();
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -24,15 +41,19 @@ public class StoreServiceImpl implements StoreService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Store not found with id: " + storeId));
-
-        Staff manager = staffRepository.findById(store.getManagerStaffId())
-                .orElse(null);
-
-        return StoreResponse.builder()
-                .storeId(store.getStoreId())
-                .addressId(store.getAddressId())
-                .managerFirstName(manager != null ? manager.getFirstName() : null)
-                .managerLastName(manager != null ? manager.getLastName() : null)
-                .build();
+        return buildResponse(store);
     }
+
+    // add this method inside your existing StoreServiceImpl
+
+    @Override
+    @Transactional(readOnly = true)
+    public StoreResponse getManagerById(Integer managerStaffId) {
+        Store store = storeRepository.findByManagerStaff_StaffId(managerStaffId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No store found for manager with id: " + managerStaffId));
+        return buildResponse(store);
+    }
+
+
 }
