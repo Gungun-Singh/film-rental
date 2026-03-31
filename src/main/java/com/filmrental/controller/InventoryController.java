@@ -27,10 +27,11 @@ public class InventoryController {
     public ResponseEntity<List<InventoryResponse>> getInventoryByStore(@PathVariable Integer storeId) {
         return ResponseEntity.ok(inventoryService.getInventoryByStoreId(storeId));
     }
-
     // GET /inventory/film/{film_id}
     @GetMapping("/film/{filmId}")
     public ResponseEntity<List<InventoryResponse>> getInventoryByFilm(@PathVariable Integer filmId) {
         return ResponseEntity.ok(inventoryService.getInventoryByFilmId(filmId));
     }
+
+
 }
