@@ -31,4 +31,10 @@ public class FilmController {
     public ResponseEntity<List<FilmResponse>> getFilmsByActor(@PathVariable Integer actorId) {
         return ResponseEntity.ok(filmService.getFilmsByActorId(actorId));
     }
+
+    // GET /films/top-rented
+    @GetMapping("/top-rented")
+    public ResponseEntity<List<FilmResponse>> getTopRentedFilms() {
+        return ResponseEntity.ok(filmService.getTopRentedFilms());
+    }
 }
