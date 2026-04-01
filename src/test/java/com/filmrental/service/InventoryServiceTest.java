@@ -60,6 +60,14 @@ import static org.mockito.Mockito.*;
             assertNotNull(result);
             assertEquals(1,result.getInventoryId());
         }
+        @Test
+        void getInventoryById_notFound() {
+
+            when(inventoryRepository.findById(10)).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class,
+                    () -> inventoryService.getInventoryById(10));
+        }
 
 
     }
