@@ -131,4 +131,38 @@ class FilmServiceTest {
         assertEquals(3, result.size());
     }
 
+    //-- test cases for getTopRentedFilms --
+
+    @Test
+    void getTopRented_success() {
+        Film film = new Film();
+
+        when(filmRepository.findTopRented()).thenReturn(List.of(film));
+        when(filmMapper.toResponse(film)).thenReturn(FilmResponse.builder().build());
+
+        List<FilmResponse> result = filmService.getTopRentedFilms();
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getTopRented_empty() {
+        when(filmRepository.findTopRented()).thenReturn(List.of());
+
+        List<FilmResponse> result = filmService.getTopRentedFilms();
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getTopRented_edge_verifyMapper() {
+        Film film = new Film();
+
+        when(filmRepository.findTopRented()).thenReturn(List.of(film));
+        when(filmMapper.toResponse(film)).thenReturn(FilmResponse.builder().build());
+
+        filmService.getTopRentedFilms();
+
+        verify(filmMapper, atLeastOnce()).toResponse(any());
+    }
 }
