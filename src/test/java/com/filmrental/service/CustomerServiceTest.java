@@ -2,13 +2,17 @@ package com.filmrental.service;
 
 import com.filmrental.entity.Customer;
 import com.filmrental.entity.Rental;
+import com.filmrental.entity.Payment;
 import com.filmrental.dto.response.CustomerResponse;
 import com.filmrental.dto.response.RentalResponse;
+import com.filmrental.dto.response.PaymentResponse;
 import com.filmrental.exception.ResourceNotFoundException;
 import com.filmrental.mapper.CustomerMapper;
 import com.filmrental.mapper.RentalMapper;
+import com.filmrental.mapper.PaymentMapper;
 import com.filmrental.repository.CustomerRepository;
 import com.filmrental.repository.RentalRepository;
+import com.filmrental.repository.PaymentRepository;
 import com.filmrental.service.impl.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +33,10 @@ class CustomerServiceTest {
 
     @Mock private CustomerRepository customerRepository;
     @Mock private CustomerMapper customerMapper;
-    @Mock private RentalRepository rentalRepository;  // added
-    @Mock private RentalMapper rentalMapper;          // added
+    @Mock private RentalRepository rentalRepository;
+    @Mock private RentalMapper rentalMapper;
+    @Mock private PaymentRepository paymentRepository;  // added
+    @Mock private PaymentMapper paymentMapper;          // added
     @InjectMocks private CustomerServiceImpl customerService;
 
     private Customer customer;
@@ -43,34 +50,36 @@ class CustomerServiceTest {
         customer.setActive(1);
     }
 
+    // previous 4 tests unchanged ...
 
     @Test
-    void getCustomerRentals_customerExists_returnsRentalList() {
-        Rental rental = new Rental();
-        rental.setRentalId(10);
-        rental.setCustomer(customer);
+    void getCustomerPayments_customerExists_returnsPaymentList() {
+        Payment payment = new Payment();
+        payment.setPaymentId(20);
+        payment.setCustomer(customer);
+        payment.setAmount(new BigDecimal("4.99"));
 
-        RentalResponse rentalResponse = RentalResponse.builder()
-                .rentalId(10).customerName("John Doe").status("ACTIVE").build();
+        PaymentResponse paymentResponse = PaymentResponse.builder()
+                .paymentId(20).amount(new BigDecimal("4.99")).build();
 
         when(customerRepository.existsById(1)).thenReturn(true);
-        when(rentalRepository.findByCustomer_CustomerId(1)).thenReturn(List.of(rental));
-        when(rentalMapper.toResponse(rental)).thenReturn(rentalResponse);
+        when(paymentRepository.findByCustomer_CustomerId(1)).thenReturn(List.of(payment));
+        when(paymentMapper.toResponse(payment)).thenReturn(paymentResponse);
 
-        List<RentalResponse> result = customerService.getCustomerRentals(1);
+        List<PaymentResponse> result = customerService.getCustomerPayments(1);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(10, result.get(0).getRentalId());
+        assertEquals(20, result.get(0).getPaymentId());
     }
 
     @Test
-    void getCustomerRentals_customerNotFound_throwsResourceNotFoundException() {
+    void getCustomerPayments_customerNotFound_throwsResourceNotFoundException() {
         when(customerRepository.existsById(99)).thenReturn(false);
 
         assertThrows(ResourceNotFoundException.class,
-                () -> customerService.getCustomerRentals(99));
+                () -> customerService.getCustomerPayments(99));
 
-        verify(rentalRepository, never()).findByCustomer_CustomerId(any());
+        verify(paymentRepository, never()).findByCustomer_CustomerId(any());
     }
 }
