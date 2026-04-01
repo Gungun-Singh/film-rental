@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
         @InjectMocks
         private InventoryServiceImpl inventoryService;
 
-
+        //Test 1-positive test case for getting inventory by id
         @Test
         void getInventoryById_success() {
 
@@ -60,6 +60,7 @@ import static org.mockito.Mockito.*;
             assertNotNull(result);
             assertEquals(1,result.getInventoryId());
         }
+        //Test 2-negative test case for getting inventory by id
         @Test
         void getInventoryById_notFound() {
 
@@ -68,6 +69,7 @@ import static org.mockito.Mockito.*;
             assertThrows(ResourceNotFoundException.class,
                     () -> inventoryService.getInventoryById(10));
         }
+        //Test 3-Positive test case for getting inventory by store id
         @Test
         void getInventoryByStoreId_success() {
 
@@ -88,6 +90,7 @@ import static org.mockito.Mockito.*;
             assertEquals(1,result.size());
         }
 
+        //Test 3-negative test case for getting inventory by store id
         @Test
         void getInventoryByStoreId_storeNotFound() {
 
@@ -97,6 +100,7 @@ import static org.mockito.Mockito.*;
                     () -> inventoryService.getInventoryByStoreId(5));
         }
 
+        //Test 5-Positive test case for getting inventory by film id
         @Test
         void getInventoryByFilmId_success() {
 
@@ -115,7 +119,8 @@ import static org.mockito.Mockito.*;
 
             assertEquals(1,result.size());
         }
-        
+
+        //Test 6-Negative test case for getting inventory by film if
         @Test
         void getInventoryByFilmId_notFound() {
 
