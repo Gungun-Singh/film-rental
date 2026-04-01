@@ -1,18 +1,18 @@
 package com.filmrental.service;
 
 import com.filmrental.entity.Customer;
-import com.filmrental.entity.Rental;
 import com.filmrental.entity.Payment;
+import com.filmrental.entity.Rental;
 import com.filmrental.dto.response.CustomerResponse;
-import com.filmrental.dto.response.RentalResponse;
 import com.filmrental.dto.response.PaymentResponse;
+import com.filmrental.dto.response.RentalResponse;
 import com.filmrental.exception.ResourceNotFoundException;
 import com.filmrental.mapper.CustomerMapper;
-import com.filmrental.mapper.RentalMapper;
 import com.filmrental.mapper.PaymentMapper;
+import com.filmrental.mapper.RentalMapper;
 import com.filmrental.repository.CustomerRepository;
-import com.filmrental.repository.RentalRepository;
 import com.filmrental.repository.PaymentRepository;
+import com.filmrental.repository.RentalRepository;
 import com.filmrental.service.impl.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,11 +32,12 @@ import static org.mockito.Mockito.*;
 class CustomerServiceTest {
 
     @Mock private CustomerRepository customerRepository;
-    @Mock private CustomerMapper customerMapper;
     @Mock private RentalRepository rentalRepository;
+    @Mock private PaymentRepository paymentRepository;
+    @Mock private CustomerMapper customerMapper;
     @Mock private RentalMapper rentalMapper;
-    @Mock private PaymentRepository paymentRepository;  // added
-    @Mock private PaymentMapper paymentMapper;          // added
+    @Mock private PaymentMapper paymentMapper;
+
     @InjectMocks private CustomerServiceImpl customerService;
 
     private Customer customer;
@@ -50,7 +51,66 @@ class CustomerServiceTest {
         customer.setActive(1);
     }
 
-    // previous 4 tests unchanged ...
+    // ─── GET /customers/{customer_id} ────────────────────────────────
+
+    @Test
+    void getCustomerById_customerExists_returnsCustomerResponse() {
+        CustomerResponse expected = CustomerResponse.builder()
+                .customerId(1).firstName("John").lastName("Doe").build();
+
+        when(customerRepository.findById(1)).thenReturn(Optional.of(customer));
+        when(customerMapper.toResponse(customer)).thenReturn(expected);
+
+        CustomerResponse result = customerService.getCustomerById(1);
+
+        assertNotNull(result);
+        assertEquals(1, result.getCustomerId());
+        verify(customerRepository, times(1)).findById(1);
+    }
+
+    @Test
+    void getCustomerById_customerNotFound_throwsResourceNotFoundException() {
+        when(customerRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> customerService.getCustomerById(99));
+
+        verify(customerRepository, times(1)).findById(99);
+    }
+
+    // ─── GET /customers/{customer_id}/rentals ────────────────────────
+
+    @Test
+    void getCustomerRentals_customerExists_returnsRentalList() {
+        Rental rental = new Rental();
+        rental.setRentalId(10);
+        rental.setCustomer(customer);
+
+        RentalResponse rentalResponse = RentalResponse.builder()
+                .rentalId(10).customerName("John Doe").status("ACTIVE").build();
+
+        when(customerRepository.existsById(1)).thenReturn(true);
+        when(rentalRepository.findByCustomer_CustomerId(1)).thenReturn(List.of(rental));
+        when(rentalMapper.toResponse(rental)).thenReturn(rentalResponse);
+
+        List<RentalResponse> result = customerService.getCustomerRentals(1);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(10, result.get(0).getRentalId());
+    }
+
+    @Test
+    void getCustomerRentals_customerNotFound_throwsResourceNotFoundException() {
+        when(customerRepository.existsById(99)).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> customerService.getCustomerRentals(99));
+
+        verify(rentalRepository, never()).findByCustomer_CustomerId(any());
+    }
+
+    // ─── GET /customers/{customer_id}/payments ───────────────────────
 
     @Test
     void getCustomerPayments_customerExists_returnsPaymentList() {
