@@ -68,6 +68,25 @@ import static org.mockito.Mockito.*;
             assertThrows(ResourceNotFoundException.class,
                     () -> inventoryService.getInventoryById(10));
         }
+        @Test
+        void getInventoryByStoreId_success() {
+
+            Inventory inv = new Inventory();
+            inv.setInventoryId(1);
+
+            when(storeRepository.existsById(1)).thenReturn(true);
+            when(inventoryRepository.findByStore_StoreId(1)).thenReturn(List.of(inv));
+
+            when(rentalRepository.existsByInventory_InventoryIdAndReturnDateIsNull(1))
+                    .thenReturn(false);
+
+            when(inventoryMapper.toResponse(any(),anyBoolean()))
+                    .thenReturn(InventoryResponse.builder().inventoryId(1).build());
+
+            List<InventoryResponse> result = inventoryService.getInventoryByStoreId(1);
+
+            assertEquals(1,result.size());
+        }
 
 
     }
