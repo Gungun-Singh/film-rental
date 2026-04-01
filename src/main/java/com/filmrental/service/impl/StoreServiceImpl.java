@@ -1,19 +1,17 @@
 package com.filmrental.service.impl;
 
-import com.filmrental.entity.Inventory;
+import com.filmrental.entity.Address;
 import com.filmrental.entity.Store;
-import com.filmrental.dto.response.InventoryResponse;
 import com.filmrental.dto.response.StoreResponse;
 import com.filmrental.exception.ResourceNotFoundException;
-import com.filmrental.mapper.InventoryMapper;
-import com.filmrental.repository.InventoryRepository;
-import com.filmrental.repository.RentalRepository;
 import com.filmrental.repository.StoreRepository;
 import com.filmrental.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.filmrental.entity.Inventory;
+import com.filmrental.dto.response.StoreInventoryResponse;
+import com.filmrental.repository.InventoryRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,8 +21,25 @@ public class StoreServiceImpl implements StoreService {
 
     private final StoreRepository storeRepository;
     private final InventoryRepository inventoryRepository;
-    private final RentalRepository rentalRepository;
-    private final InventoryMapper inventoryMapper;
+
+    private StoreResponse buildResponse(Store store) {
+        Address addr = store.getAddress();
+
+        return StoreResponse.builder()
+                .storeId(store.getStoreId())
+                .address(addr != null
+                        ? addr.getAddress() : null)
+                .city(addr != null && addr.getCity() != null
+                        ? addr.getCity().getCity() : null)
+                .country(addr != null && addr.getCity() != null
+                        && addr.getCity().getCountry() != null
+                        ? addr.getCity().getCountry().getCountry() : null)
+                .managerFirstName(store.getManagerStaff() != null
+                        ? store.getManagerStaff().getFirstName() : null)
+                .managerLastName(store.getManagerStaff() != null
+                        ? store.getManagerStaff().getLastName() : null)
+                .build();
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -32,38 +47,52 @@ public class StoreServiceImpl implements StoreService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Store not found with id: " + storeId));
+        return buildResponse(store);
+    }
 
-        String managerFirst = null;
-        String managerLast  = null;
-        if (store.getManagerStaff() != null) {
-            managerFirst = store.getManagerStaff().getFirstName();
-            managerLast  = store.getManagerStaff().getLastName();
-        }
 
-        return StoreResponse.builder()
-                .storeId(store.getStoreId())
-                .addressId(store.getAddressId())
-                .managerFirstName(managerFirst)
-                .managerLastName(managerLast)
-                .build();
+    @Override
+    @Transactional(readOnly = true)
+    public StoreResponse getManagerById(Integer managerStaffId) {
+        Store store = storeRepository.findByManagerStaff_StaffId(managerStaffId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No store found for manager with id: " + managerStaffId));
+        return buildResponse(store);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<InventoryResponse> getInventoryByStoreId(Integer storeId) {
-        if (!storeRepository.existsById(storeId)) {
+    public List<StoreInventoryResponse> getStoreInventory(Integer storeId) {
+
+        // check store exists first
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Store not found with id: " + storeId));
+
+        // get all inventory for this store
+        List<Inventory> inventoryList = inventoryRepository.findByStore_StoreId(storeId);
+
+        if (inventoryList.isEmpty()) {
             throw new ResourceNotFoundException(
-                    "Store not found with id: " + storeId);
+                    "No inventory found for store id: " + storeId);
         }
-        List<Inventory> inventoryList =
-                inventoryRepository.findByStore_StoreId(storeId);
+
+        // map each inventory item to response
         return inventoryList.stream()
-                .map(inv -> {
-                    boolean available = !rentalRepository
-                            .existsByInventory_InventoryIdAndReturnDateIsNull(
-                                    inv.getInventoryId());
-                    return inventoryMapper.toResponse(inv, available);
-                })
+                .map(inv -> StoreInventoryResponse.builder()
+                        .inventoryId(inv.getInventoryId())
+                        .filmId(inv.getFilm() != null
+                                ? inv.getFilm().getFilmId() : null)
+                        .filmTitle(inv.getFilm() != null
+                                ? inv.getFilm().getTitle() : null)
+                        .storeId(store.getStoreId())
+                        .managerFirstName(store.getManagerStaff() != null
+                                ? store.getManagerStaff().getFirstName() : null)
+                        .managerLastName(store.getManagerStaff() != null
+                                ? store.getManagerStaff().getLastName() : null)
+                        .build())
                 .collect(Collectors.toList());
     }
+
+
 }
