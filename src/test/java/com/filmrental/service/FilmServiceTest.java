@@ -96,4 +96,39 @@ class FilmServiceTest {
         verify(filmRepository).findByCategories_CategoryId(1);
     }
 
- }
+    // -- test cases for getFilmsByActorId --
+
+    @Test
+    void getFilmsByActor_success() {
+        Film film = new Film();
+
+        when(filmRepository.findByActors_ActorId(1)).thenReturn(List.of(film));
+        when(filmMapper.toResponse(film)).thenReturn(FilmResponse.builder().build());
+
+        List<FilmResponse> result = filmService.getFilmsByActorId(1);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getFilmsByActor_empty() {
+        when(filmRepository.findByActors_ActorId(99)).thenReturn(List.of());
+
+        List<FilmResponse> result = filmService.getFilmsByActorId(99);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getFilmsByActor_edge_largeList() {
+        List<Film> films = List.of(new Film(), new Film(), new Film());
+
+        when(filmRepository.findByActors_ActorId(1)).thenReturn(films);
+        when(filmMapper.toResponse(any())).thenReturn(FilmResponse.builder().build());
+
+        List<FilmResponse> result = filmService.getFilmsByActorId(1);
+
+        assertEquals(3, result.size());
+    }
+
+}
