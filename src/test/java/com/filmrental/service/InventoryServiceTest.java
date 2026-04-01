@@ -87,6 +87,15 @@ import static org.mockito.Mockito.*;
 
             assertEquals(1,result.size());
         }
+        
+        @Test
+        void getInventoryByStoreId_storeNotFound() {
+
+            when(storeRepository.existsById(5)).thenReturn(false);
+
+            assertThrows(ResourceNotFoundException.class,
+                    () -> inventoryService.getInventoryByStoreId(5));
+        }
 
 
     }
