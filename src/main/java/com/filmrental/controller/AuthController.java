@@ -3,7 +3,6 @@ package com.filmrental.controller;
 import com.filmrental.dto.request.LoginRequest;
 import com.filmrental.dto.response.AdminProfileResponse;
 import com.filmrental.dto.response.AuthResponse;
-import com.filmrental.dto.response.UserProfileResponse;
 import com.filmrental.security.CustomUserPrincipal;
 import com.filmrental.service.AuthService;
 import jakarta.validation.Valid;
@@ -26,12 +25,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
-    }
-
-    @GetMapping("/user/profile")
-    public ResponseEntity<UserProfileResponse> getUserProfile(
-            @AuthenticationPrincipal CustomUserPrincipal principal) {
-        return ResponseEntity.ok(authService.getUserProfile(principal));
     }
 
     @GetMapping("/admin/profile")
