@@ -13,8 +13,6 @@ import java.util.List;
 public class CustomUserPrincipal implements UserDetails {
 
     private final Integer userId;
-    private final Integer customerId;
-    private final Integer staffId;
     private final String username;
     private final String password;
     private final String role;
@@ -22,8 +20,6 @@ public class CustomUserPrincipal implements UserDetails {
 
     public CustomUserPrincipal(UserAccount userAccount) {
         this.userId = userAccount.getUserId();
-        this.customerId = userAccount.getCustomerId();
-        this.staffId = userAccount.getStaffId();
         this.username = userAccount.getUsername();
         this.password = userAccount.getPassword();
         this.role = userAccount.getRole();

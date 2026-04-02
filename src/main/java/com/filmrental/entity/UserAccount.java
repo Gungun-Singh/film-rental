@@ -33,12 +33,6 @@ public class UserAccount {
     @Column(name = "role", nullable = false, length = 20)
     private String role;
 
-    @Column(name = "customer_id")
-    private Integer customerId;
-
-    @Column(name = "staff_id")
-    private Integer staffId;
-
     @Column(name = "login_date")
     private LocalDateTime loginDate;
 
