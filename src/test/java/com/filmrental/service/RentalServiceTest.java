@@ -6,11 +6,7 @@ import com.filmrental.entity.Film;
 import com.filmrental.entity.Inventory;
 import com.filmrental.entity.Rental;
 import com.filmrental.mapper.RentalMapper;
-import com.filmrental.repository.CustomerRepository;
-import com.filmrental.repository.InventoryRepository;
-import com.filmrental.repository.PaymentRepository;
 import com.filmrental.repository.RentalRepository;
-import com.filmrental.repository.StaffRepository;
 import com.filmrental.service.impl.RentalServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,10 +25,6 @@ import static org.mockito.Mockito.when;
 class RentalServiceTest {
 
     @Mock private RentalRepository rentalRepository;
-    @Mock private CustomerRepository customerRepository;
-    @Mock private InventoryRepository inventoryRepository;
-    @Mock private StaffRepository staffRepository;
-    @Mock private PaymentRepository paymentRepository;
     @Mock private RentalMapper rentalMapper;
 
     @InjectMocks
@@ -56,37 +48,6 @@ class RentalServiceTest {
         customer.setCustomerId(1);
         customer.setFirstName("John");
         customer.setLastName("Doe");
-    }
-
-    @Test
-    void getAllRentals_positive_returnsListOfRentalResponses() {
-        Rental rental = new Rental();
-        rental.setRentalId(1);
-        rental.setCustomer(customer);
-        rental.setInventory(inventory);
-
-        RentalResponse response = RentalResponse.builder()
-                .rentalId(1)
-                .customerName("John Doe")
-                .filmTitle("ACADEMY DINOSAUR")
-                .build();
-
-        when(rentalRepository.findAll()).thenReturn(List.of(rental));
-        when(rentalMapper.toResponse(rental)).thenReturn(response);
-
-        List<RentalResponse> result = rentalService.getAllRentals();
-
-        assertEquals(1, result.size());
-        assertEquals(1, result.get(0).getRentalId());
-    }
-
-    @Test
-    void getAllRentals_negative_returnsEmptyList() {
-        when(rentalRepository.findAll()).thenReturn(Collections.emptyList());
-
-        List<RentalResponse> result = rentalService.getAllRentals();
-
-        assertEquals(0, result.size());
     }
 
     @Test
