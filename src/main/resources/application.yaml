@@ -16,16 +16,5 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
-  thymeleaf:
-    cache: false
-
-jwt:
-  secret: filmrentalSecretKey1234567890abcdefghijklmnopqrstuvwxyz
-  expiration: 86400000
-
 server:
   port: 8081
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
